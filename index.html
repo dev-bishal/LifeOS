@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>LifeOS</title>
+    <meta name="description" content="LifeOS — goals, tasks, focus and reminders in one place." />
+    <meta name="theme-color" content="#f8fafc" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="LifeOS" />
+
+    <!-- Apply the saved theme before first paint to avoid a flash. -->
+    <script>
+      (function () {
+        try {
+          var s = JSON.parse(localStorage.getItem('lifeos:settings:v1') || '{}');
+          var t = s.theme || 'system';
+          if (t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- Tailwind CSS v4 (browser build). See DEVELOPMENT.md §7 for a precompiled alternative. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @custom-variant dark (&:where(.dark, .dark *));
+
+      @theme {
+        --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      }
+
+      @layer components {
+        .btn {
+          @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium whitespace-nowrap transition select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:pointer-events-none disabled:opacity-50;
+        }
+        .btn-sm {
+          @apply px-2.5 py-1.5 text-xs;
+        }
+        .btn-primary {
+          @apply bg-indigo-600 text-white shadow-sm hover:bg-indigo-500 active:bg-indigo-700;
+        }
+        .btn-secondary {
+          @apply bg-white text-slate-700 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-200 dark:ring-slate-700 dark:hover:bg-slate-700;
+        }
+        .btn-ghost {
+          @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-indigo-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white;
+        }
+        .btn-danger {
+          @apply bg-rose-600 text-white shadow-sm hover:bg-rose-500;
+        }
+        .btn-icon {
+          @apply p-2;
+        }
+        .card {
+          @apply rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/80 dark:bg-slate-900 dark:ring-slate-800;
+        }
+        .input {
+          @apply block w-full rounded-lg border-0 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm ring-1 ring-slate-300 transition ring-inset placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:bg-slate-800/80 dark:text-slate-100 dark:ring-slate-700 dark:placeholder:text-slate-500;
+        }
+        .label {
+          @apply mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400;
+        }
+        .chip {
+          @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] leading-4 font-medium;
+        }
+        .tab {
+          @apply cursor-pointer rounded-lg px-3 py-1.5 text-sm font-medium whitespace-nowrap text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white;
+        }
+        .tab[aria-selected='true'] {
+          @apply bg-white text-slate-900 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:text-white dark:ring-slate-700;
+        }
+        .tabs {
+          @apply inline-flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 dark:bg-slate-900 dark:ring-1 dark:ring-slate-800;
+        }
+        .nav-link {
+          @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-white;
+        }
+        .nav-link[aria-current='page'] {
+          @apply bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300;
+        }
+        .page-title {
+          @apply text-2xl font-bold tracking-tight text-slate-900 dark:text-white;
+        }
+        .section-title {
+          @apply text-sm font-semibold text-slate-900 dark:text-slate-100;
+        }
+        .muted {
+          @apply text-slate-500 dark:text-slate-400;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body class="min-h-dvh bg-slate-50 font-sans text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-200">
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <div id="app" class="flex min-h-dvh">
+      <!-- Desktop sidebar (rendered by js/ui/shell.js) -->
+      <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 bg-white/80 backdrop-blur lg:flex dark:border-slate-800 dark:bg-slate-900/60" aria-label="Main navigation"></aside>
+
+      <div class="flex min-w-0 flex-1 flex-col lg:pl-64">
+        <header id="topbar" class="sticky top-0 z-20 border-b border-slate-200/70 bg-slate-50/85 backdrop-blur dark:border-slate-800/70 dark:bg-slate-950/80"></header>
+        <main id="main" tabindex="-1" class="mx-auto w-full max-w-6xl flex-1 px-4 pt-5 pb-28 outline-none sm:px-6 lg:px-8 lg:pb-12"></main>
+      </div>
+
+      <!-- Mobile bottom navigation -->
+      <nav id="bottom-nav" class="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 backdrop-blur lg:hidden dark:border-slate-800 dark:bg-slate-900/95" aria-label="Primary"></nav>
+      <!-- Mobile quick-add button -->
+      <button type="button" data-action="quick-add" aria-label="Quick add task"
+        class="fixed right-4 z-30 grid size-14 place-items-center rounded-full bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 transition active:scale-95 lg:hidden"
+        style="bottom: calc(4.75rem + var(--safe-bottom))">
+        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+      </button>
+      <!-- Mobile slide-out drawer -->
+      <div id="drawer" class="lg:hidden" hidden></div>
+    </div>
+
+    <!-- Signed-out experience: homepage (#/) and sign in / create account (#/login, #/signup) -->
+    <div id="landing-root" hidden></div>
+    <div id="auth-root" hidden></div>
+
+    <div id="modal-root"></div>
+    <div id="focus-root"></div>
+    <div id="toast-root" class="pointer-events-none fixed inset-x-0 bottom-36 z-[70] flex flex-col items-center gap-2 px-4 lg:bottom-6 lg:items-end lg:px-6" aria-live="polite"></div>
+
+    <noscript>
+      <div style="padding: 2rem; font-family: sans-serif">LifeOS needs JavaScript enabled to run.</div>
+    </noscript>
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>
